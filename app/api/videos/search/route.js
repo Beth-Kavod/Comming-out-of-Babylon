@@ -6,8 +6,8 @@ dotenv.config()
 export async function GET(request) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const videoID = searchParams.get('videoID') || 0
-    const limit = searchParams.get('limit') || 10
+    const videoID = parseInt(searchParams.get('videoID')) || 0
+    const limit = parseInt(searchParams.get('limit')) || 10
     const search = searchParams.get('search') || ""
     const searchRegex = new RegExp(search, 'i')
 
@@ -29,7 +29,7 @@ export async function GET(request) {
         title: video.title
       }
     })
-
+    
     const filteredData = videosData.filter(video => {
       return searchRegex.test(video.title) || searchRegex.test(video.source) || searchRegex.test(video.thumbnail);
     });

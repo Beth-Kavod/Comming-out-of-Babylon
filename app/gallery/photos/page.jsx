@@ -4,13 +4,14 @@ import styles from "../gallery.module.css";
 import { useState, useEffect, useMemo } from "react";
 
 // Components
-import Video from "@/components/gallery/Video"
+import Photo from "@/components/gallery/Photo"
+import SearchForm from "@/components/forms/SearchForm";
 
 export default function PhotoGallery() {
   const [videoData, setVideoData] = useState([])
   const [fetchParams, setFetchParams] = useState({
     search: "",
-    imageIndex: ""
+    mediaId: ""
   })
 
   const memoizedImageData = useMemo(() => videoData, [videoData]);
@@ -22,7 +23,7 @@ export default function PhotoGallery() {
   }
   
   function callMedia() {
-    fetch(`/api/search/photos?videoID=${fetchParams.videoIndex}&search=${fetchParams.search}`, {
+    fetch(`/api/search/photos?mediaId=${fetchParams.mediaId}&search=${fetchParams.search}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -36,28 +37,10 @@ export default function PhotoGallery() {
     .catch(error => console.error('Error fetching media:', error));
   }
 
-  function handleInputChange(event) {
-    event.preventDefault()
-
-    const { name, value } = event.target
-    setFetchParams(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-
   return (
     <main className={styles.main}>
       <form onSubmit={submitForm} action="">
-        <div className="formGroup">
-          <label htmlFor="search">Search</label>
-          <input type="text" id="search" name="search" onChange={handleInputChange} />
-        </div>
-        <div className="formGroup">
-          <label htmlFor="imageID">ImageID</label>
-          <input type="text" id="imageID" name="imageIndex" onChange={handleInputChange} />
-        </div>
-        <input type="submit" value="Submit" />
+        <SearchForm params={{ fetchParams, setFetchParams }} />
       </form>
       <div className={styles.container} id="gallery">
         { !!memoizedImageData.length ?

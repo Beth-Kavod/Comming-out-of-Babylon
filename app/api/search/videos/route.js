@@ -6,8 +6,10 @@ dotenv.config()
 export async function GET(request) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const videoID = parseInt(searchParams.get('videoID')) || 0
+    
+    const mediaId = parseInt(searchParams.get('mediaId')) || 0
     const limit = parseInt(searchParams.get('limit')) || 10
+
     const search = searchParams.get('search') || ""
     const searchRegex = new RegExp(search, 'i')
 
@@ -36,7 +38,7 @@ export async function GET(request) {
     });
 
     const returnedData = () => {
-      const slicedArray = returnArraySlice(filteredData, videoID, limit)
+      const slicedArray = returnArraySlice(filteredData, mediaId, limit)
       return !!slicedArray.length ? slicedArray : `No videos found that match: ${search}` 
     }
 

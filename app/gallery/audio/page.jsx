@@ -5,12 +5,13 @@ import { useState, useEffect, useMemo } from "react";
 
 // Components
 import Audio from "@/components/gallery/Audio"
+import SearchForm from "@/components/forms/SearchForm"
 
 export default function AudioGallery() {
   const [audioData, setAudioData] = useState([])
   const [fetchParams, setFetchParams] = useState({
     search: "",
-    audioIndex: ""
+    mediaId: ""
   })
 
   const memoizedAudioData = useMemo(() => audioData, [audioData]);
@@ -23,7 +24,7 @@ export default function AudioGallery() {
   }
 
   function callMedia() {
-    fetch(`/api/search/audio?videoID=${fetchParams.videoIndex}&search=${fetchParams.search}`, {
+    fetch(`/api/search/audio?mediaId=${fetchParams.mediaId}&search=${fetchParams.search}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -37,32 +38,10 @@ export default function AudioGallery() {
     .catch(error => console.error('Error fetching media:', error));
   }
 
-  function handleInputChange(event) {
-    event.preventDefault()
-
-    const { name, value } = event.target
-    setFetchParams(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-/* 
-  useEffect(() => {
-    console.log(fetchParams)
-  }, [fetchParams])
- */
   return (
     <main className={styles.main}>
       <form onSubmit={submitForm} action="">
-        <div className="formGroup">
-          <label htmlFor="search">Search</label>
-          <input type="text" id="search" name="search" onChange={handleInputChange} />
-        </div>
-        <div className="formGroup">
-          <label htmlFor="audioID">audioID</label>
-          <input type="text" id="audioID" name="audioIndex" onChange={handleInputChange} />
-        </div>
-        <input type="submit" value="Submit" />
+        <SearchForm params={{ fetchParams, setFetchParams }} />
       </form>
       <div className={styles.container} id="gallery">
         { !!memoizedAudioData.length ?

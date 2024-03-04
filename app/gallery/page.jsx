@@ -1,38 +1,61 @@
+"use client"
 import Image from "next/image";
 import styles from "./page.module.css";
 import { useState, useEffect } from "react";
 
+// Components
+import Video from "@/components/gallery/Video"
+
 export default function Gallery() {
-  const [videoData, setVideoData] = useState({
-    source: "",
-    thumbnail: ""
-  })
+  const [videoIndex, setVideoIndex] = useState("")
+  const [videoData, setVideoData] = useState([])
+  const [search, setSearch] = useState("")
   
   function callMedia() {
-    fetch(`http://192.168.1.18:32400/library/sections/1/all`, {
+    fetch(`api/videos/search?videoID=${videoIndex}&search=${search}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
-        'X-Plex-Token': 'AEazHy_Cth5dM57DVpXS'
       }
     })
     .then(res => res.json())
     .then(res => {
-      // Assuming the first video in the response
-      const absoluteVideoUrl = res.MediaContainer.Metadata[1].Media[0].Part[0].key;
-      const absolutePreviewUrl = res.MediaContainer.Metadata[1].art;
-      setVideoData(() => ({
-        source: `http://192.168.1.18:32400${absoluteVideoUrl}?X-Plex-Token=AEazHy_Cth5dM57DVpXS`,
-        thumbnail: `http://192.168.1.18:32400${absolutePreviewUrl}?X-Plex-Token=AEazHy_Cth5dM57DVpXS`
-      }))
+      setVideoData(() => res.data || [])
+      console.log(res.data)
     })
     .catch(error => console.error('Error fetching media:', error));
   }
+
+  function handleChange(event) {
+    event.preventDefault()
+    setVideoIndex(parseInt(event.target.value))
+  }
+
+  function handleSearchChange(event) {
+    event.preventDefault()
+    setSearch(event.target.value)
+    console.log(search)
+  }
+
+
   return (
     <main className={styles.main}>
-      <div class="container">
-        <Video params={{ videoData }} />
-        <button onclick={() => callMedia()}>Call media</button>
+      <div className="formGroup">
+        <label htmlFor="search">Search</label>
+        <input type="text" id="search" onChange={handleSearchChange} />
+      </div>
+      <div className="formGroup">
+        <label htmlFor="imageID">ImageID</label>
+        <input type="text" id="imageID" onChange={handleChange} />
+      </div>
+      <button onClick={() => callMedia()}>Call media</button>
+      <div className={styles.container} id="gallery">
+        { !!videoData.length ?
+          videoData.map(video => {
+            return <Video key={video.thumbnail} params={{ video }} />
+          })
+          : null 
+        }
       </div>
     </main>
   );

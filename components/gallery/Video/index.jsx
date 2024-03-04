@@ -10,11 +10,11 @@ export default function Video({ params }) {
         muted={false}
         className={styles.videoPlayer}
         poster={video.thumbnail}
-        src={video.source}
         controls
         loop
       >
-        <source type="video/mp4" />
+        <source src={video.source} type="video/mp4" />
+        Your browser does not support the video tag.
       </video>
     </div>
   )

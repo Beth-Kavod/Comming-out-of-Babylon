@@ -24,12 +24,13 @@ export async function GET(request) {
 
     const videosData = videosJson.MediaContainer.Metadata.map(video => {
       return {
-        thumbnail: `http://${process.env.SERVER_IP}${video.thumb}`/* ?X-Plex-Token=${process.env.PLEX_TOKEN} */,
-        source: `http://${process.env.SERVER_IP}${video.Media[0].Part[0].key}` /* ?X-Plex-Token=${process.env.PLEX_TOKEN} */,
+        thumbnail: `http://${process.env.SERVER_IP}${video.thumb}?X-Plex-Token=${process.env.PLEX_TOKEN}`,
+        source: `http://${process.env.SERVER_IP}${video.Media[0].Part[0].key}?X-Plex-Token=${process.env.PLEX_TOKEN}`,
         title: video.title
       }
     })
-    
+
+    // Search data with Regex
     const filteredData = videosData.filter(video => {
       return searchRegex.test(video.title) || searchRegex.test(video.source) || searchRegex.test(video.thumbnail);
     });
